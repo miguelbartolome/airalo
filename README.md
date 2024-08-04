@@ -28,16 +28,15 @@ This repository contains the unibet/baseball tests for the QA Automation Enginee
 
 3. **Install dotenv**
 
-    Install dotenv:
+    Install the dotenv package to manage environment variables:
 
     ```bash
     npm install dotenv
     ```
 
-4. **Create .env**
+4. **Create .env file**
 
-1. Duplicate the .env.example file as .env
-2. Add your client_id and client_secret
+Duplicate the .env.example file and rename it to .env. Then, add your client_id and client_secret to the new .env file.
 
 ## Running Tests
 
@@ -51,16 +50,14 @@ npx playwright test
 
 ## Testing Approach
 
-Understanding the application's structure.
-Flow of the test case.
-Works on ui, headless and different browsers.
-Tests were only done on desktop view and mobile was not considered.
+### UI Testing
 
+Before beginning any automation, I take the time to understand the application's overall structure. This helps in visualizing the testing approach effectively.
 
-The Japan specific test is categorized under the local e-sim test to allow for expansion to other countries if necessary. POM (Page Object Model) is used for the Home Page and Country Page to allow for reusability and maintainability. The API testing
+The Japan-specific test is categorized under the local e-SIM test suite, which allows for easy expansion to other countries if necessary. The Page Object Model (POM) is utilized to enhance reusability and simplify future maintenance.
 
-placed getting the token in a beforeall hook, centralizes the token retrieval logic, making your tests cleaner and easier to maintain
+Tests are conducted in both UI and headless modes across different browsers to ensure consistent application behavior. Currently, the focus is on desktop views, and mobile view testing is not included.
 
-If the token retrieval fails (e.g., due to missing environment variables), the test suite will halt immediately, avoiding further unnecessary requests
+### API Testing
 
-This ensures the token is available for all test cases
+Token retrieval is centralized in a beforeAll hook, ensuring that the token is available for all test scenarios. This approach keeps the tests cleaner and reduces redundancy. If token retrieval fails (e.g., due to missing environment variables), the entire test suite halts immediately. This prevents unnecessary requests and ensures that testing is conducted under valid conditions.
