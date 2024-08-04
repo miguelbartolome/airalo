@@ -1,9 +1,11 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request as pwRequest } from '@playwright/test';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-test('should create and retrieve eSIMs and verify correctness', async ({ request }) => {
+let accessToken: string;
+
+test.beforeAll(async ({ request }) => {
   const clientId = process.env.CLIENT_ID || '';
   const clientSecret = process.env.CLIENT_SECRET || '';
 
@@ -11,7 +13,7 @@ test('should create and retrieve eSIMs and verify correctness', async ({ request
     throw new Error('CLIENT_ID and CLIENT_SECRET environment variables must be defined');
   }
 
-  // Step 1: Obtain the access token
+  // Obtain the access token
   const tokenResponse = await request.post('https://sandbox-partners-api.airalo.com/v2/token', {
     headers: { 'Accept': 'application/json' },
     form: {
@@ -22,13 +24,16 @@ test('should create and retrieve eSIMs and verify correctness', async ({ request
   });
 
   expect(tokenResponse.ok()).toBeTruthy();
-  const { data: { access_token } } = await tokenResponse.json();
+  const tokenData = await tokenResponse.json();
+  accessToken = tokenData.data.access_token;
+});
 
+test('should create and retrieve eSIMs and verify correctness', async ({ request }) => {
   // Step 2: Create a new order and retrieve simIds
   const orderResponse = await request.post('https://sandbox-partners-api.airalo.com/v2/orders', {
     headers: {
       'Accept': 'application/json',
-      'Authorization': `Bearer ${access_token}`,
+      'Authorization': `Bearer ${accessToken}`,
     },
     form: {
       quantity: '6',
@@ -53,7 +58,7 @@ test('should create and retrieve eSIMs and verify correctness', async ({ request
   const esimsResponse = await request.get('https://sandbox-partners-api.airalo.com/v2/sims?include=order', {
     headers: {
       'Accept': 'application/json',
-      'Authorization': `Bearer ${access_token}`
+      'Authorization': `Bearer ${accessToken}`
     }
   });
 
